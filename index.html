@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Opus para pensar, Sonnet para hacer, Haiku para lo rápido: qué modelo de Claude usar según el paso de tu trabajo.">
+<title>Qué modelo de Claude usar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Concepto: guía de consulta de una sola columna. Cada paso del trabajo lleva una etiqueta con el modelo que lo hace; el morado se reserva para lo que depende de ti. */
+:root{
+  color-scheme:light;--bg:#f6f6f3;--surface:#ffffff;--fg:#1d2230;--muted:#5d6475;--line:#dcdde3;
+  --you:#6b4fbb;--you-bg:#efebfa;
+  --opus:#1d2230;--opus-fg:#ffffff;
+  --sonnet:#0f7a73;--sonnet-bg:#e1f2f0;
+  --haiku:#b86a00;--haiku-bg:#fbeedb;
+  --opus-bg:#e6e8ee;
+  --display:"Space Grotesk",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14171f;--surface:#1c212c;--fg:#eceef3;--muted:#a1a8b8;--line:#2e3442;
+  --you:#b5a2f0;--you-bg:#2a2445;
+  --opus:#eceef3;--opus-fg:#14171f;--opus-bg:#2a3040;
+  --sonnet:#4cc4ba;--sonnet-bg:#133632;
+  --haiku:#f0a53d;--haiku-bg:#3a2a10;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14171f;--surface:#1c212c;--fg:#eceef3;--muted:#a1a8b8;--line:#2e3442;
+  --you:#b5a2f0;--you-bg:#2a2445;
+  --opus:#eceef3;--opus-fg:#14171f;--opus-bg:#2a3040;
+  --sonnet:#4cc4ba;--sonnet-bg:#133632;
+  --haiku:#f0a53d;--haiku-bg:#3a2a10;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body);
+  padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.1;font-weight:700;letter-spacing:-.01em}
+h2{font-size:22px;line-height:1.25;font-weight:700}
+p{margin:0}
+.by{font-size:13px;color:var(--muted);margin-top:8px}
+.lead{margin-top:18px;font-size:18px}
+.lead b{font-weight:600}
+.donde{margin-top:12px;color:var(--muted);font-size:15px}
+.tri{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.tag.opus{background:var(--opus-bg);color:var(--opus)}
+.tag.sonnet{background:var(--sonnet-bg);color:var(--sonnet)}
+.tag.haiku{background:var(--haiku-bg);color:var(--haiku)}
+.tag.you{background:var(--you-bg);color:var(--you)}
+.tag i{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.sec>p{color:var(--muted);margin-top:8px}
+.steps{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:0 14px}
+.rail{display:flex;flex-direction:column;align-items:center}
+.dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--line);background:var(--bg);margin-top:6px;flex:none}
+.step.you .dot{border-color:var(--you);background:var(--you)}
+.step.opus .dot{border-color:var(--opus)}.step.sonnet .dot{border-color:var(--sonnet)}.step.haiku .dot{border-color:var(--haiku)}
+.line{flex:1;width:2px;background:var(--line);margin-block:2px}
+.step:last-child .line{display:none}
+.cont{padding-bottom:22px;min-width:0}
+.t{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+.t small{font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0;text-transform:none;margin-left:6px}
+.d{color:var(--muted);font-size:15px;margin-top:2px}
+.who{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.who .tag{font-weight:500;padding:4px 10px;white-space:normal}
+.who .tag b{font-weight:700}
+.list{margin:18px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row p{font-size:15px}
+.row .tag{justify-self:end}
+.small{margin-top:28px}
+.small h3{font-family:var(--display);font-size:18px;margin:0 0 8px}
+.small p{margin-top:8px}
+.box{margin-top:14px;border:1px solid var(--you);background:var(--you-bg);border-radius:12px;padding:16px}
+.box q{display:block;font-size:15px;quotes:none}
+.box button{margin-top:12px;min-height:44px;padding:0 16px;font:inherit;font-size:14px;font-weight:600;color:#fff;background:var(--you);border:0;border-radius:8px;cursor:pointer}
+:root[data-theme="dark"] .box button{color:#14171f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .box button{color:#14171f}}
+.box button:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.rules{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:r}
+.rules li{counter-increment:r;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px}
+.rules li::before{content:counter(r);font-family:var(--display);font-weight:700;width:32px;height:32px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-size:15px}
+.rules li p{padding-top:3px}
+.foot{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot a{color:var(--you)}
+@media (max-width:480px){.row{grid-template-columns:minmax(0,1fr)}.row .tag{justify-self:start}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Qué modelo de Claude usar</h1>
+    <p class="by">Javier Rivas · Versión pública · 28/10/2026</p>
+    <p class="lead"><b>Opus para pensar, Sonnet para hacer, Haiku para lo rápido.</b></p>
+    <div class="tri" aria-label="Los tres modelos">
+      <span class="tag opus"><i></i>Opus: pensar</span>
+      <span class="tag sonnet"><i></i>Sonnet: hacer</span>
+      <span class="tag haiku"><i></i>Haiku: lo rápido</span>
+    </div>
+    <p class="donde">Dónde se cambia: en claude.ai y en Cowork, en el selector de modelo junto a la caja donde escribes; en Claude Code, escribe <code>/model</code>.</p>
+  </header>
+
+  <section class="sec" aria-labelledby="s1">
+    <h2 id="s1">1. En el trabajo de cada día</h2>
+    <p>Tu trabajo en orden, y qué modelo te ayuda en cada paso. No todo pasa por todos los pasos: un correo sencillo es solo «hacer» y «lo lees tú». En morado, lo que depende de ti.</p>
+    <ol class="steps">
+      <li class="step haiku"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Reunir</div><p class="d">Lo que necesitas para empezar</p>
+        <div class="who"><span class="tag haiku"><i></i><b>Busca</b> un dato o un documento · Haiku</span></div></div></li>
+      <li class="step opus"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Pensar<small>si hace falta</small></div><p class="d">Qué hacer y cómo</p>
+        <div class="who"><span class="tag opus"><i></i><b>Analiza</b> compara opciones y propone qué hacer · Opus</span></div></div></li>
+      <li class="step sonnet"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Hacer</div><p class="d">El documento, el correo, el informe</p>
+        <div class="who"><span class="tag sonnet"><i></i><b>Redacta</b> documentos, correos, resúmenes, hojas de cálculo · Sonnet</span></div></div></li>
+      <li class="step haiku"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Pulir</div><p class="d">Que quede limpio</p>
+        <div class="who"><span class="tag haiku"><i></i><b>Pule</b> erratas, formato, traducciones cortas · Haiku</span></div></div></li>
+      <li class="step opus"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Revisar<small>si es importante</small></div><p class="d">Contratos, dinero, lo que sale fuera</p>
+        <div class="who"><span class="tag opus"><i></i><b>Revisa</b> lo importante, antes de que salga · Opus</span></div></div></li>
+      <li class="step you"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t" style="color:var(--you)">Lo lees tú</div><p class="d">Y tú lo envías</p></div></li>
+    </ol>
+  </section>
+
+  <section class="sec" aria-labelledby="s2">
+    <h2 id="s2">2. Cuando construyes una aplicación o una automatización</h2>
+    <p>Lo normal: Opus planifica, Sonnet construye y corrige, y Opus revisa antes de que la use nadie más. Haiku busca y, cuando Sonnet confirma que un cambio es pequeño, lo hace. En morado, lo que depende de ti.</p>
+    <ol class="steps">
+      <li class="step you"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t" style="color:var(--you)">Idea</div><p class="d">Qué problema quieres resolver</p>
+        <div class="who"><span class="tag haiku"><i></i><b>Busca</b> lo que ya existe, ejemplos, documentos · Haiku</span></div></div></li>
+      <li class="step opus"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Plan</div><p class="d">Escrito antes de construir</p>
+        <div class="who"><span class="tag opus"><i></i><b>Planifica</b> qué hará, qué datos usará, cómo se probará · Opus</span></div></div></li>
+      <li class="step sonnet"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Construir</div><p class="d">Paso a paso, lo que dice el plan</p>
+        <div class="who"><span class="tag sonnet"><i></i><b>Construye</b> la aplicación o la automatización · Sonnet</span></div></div></li>
+      <li class="step you"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t" style="color:var(--you)">Probar</div><p class="d">Tú, siempre con datos inventados</p>
+        <div class="who"><span class="tag sonnet"><i></i><b>Corrige</b> lo que falle en las pruebas · Sonnet</span></div></div></li>
+      <li class="step opus"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">Revisar</div><p class="d">Antes de que la use nadie más</p>
+        <div class="who"><span class="tag opus"><i></i><b>Revisa</b> que sea segura antes de usarla de verdad · Opus</span></div></div></li>
+      <li class="step you"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t" style="color:var(--you)">Antes de usarlo de verdad</div><p class="d">Datos reales, otras personas o un enlace: solo revisado y probado</p></div></li>
+      <li class="step sonnet"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="cont">
+        <div class="t">En uso</div><p class="d">Cada cambio: lo valora Sonnet; si es pequeño, Haiku</p>
+        <div class="who">
+          <span class="tag sonnet"><i></i><b>Valora el cambio</b> ¿es pequeño? Lo decide con la definición de la guía · Sonnet</span>
+          <span class="tag haiku"><i></i><b>Cambio pequeño</b> un texto, un color, un estilo; luego pruébalo · Haiku</span>
+        </div></div></li>
+    </ol>
+  </section>
+
+  <section class="sec" aria-labelledby="s3">
+    <h2 id="s3">Para cada cosa</h2>
+    <p>Si quieres…, usa:</p>
+    <div class="list" role="list">
+      <div class="row" role="listitem"><p>Analizar algo, comparar opciones o preparar una decisión</p><span class="tag opus"><i></i>Opus</span></div>
+      <div class="row" role="listitem"><p>Planificar una aplicación o una automatización: qué hará, qué datos usará, cómo se probará</p><span class="tag opus"><i></i>Opus</span></div>
+      <div class="row" role="listitem"><p>Redactar un documento o un correo, resumir, preparar una presentación o una hoja de cálculo</p><span class="tag sonnet"><i></i>Sonnet</span></div>
+      <div class="row" role="listitem"><p>Construir una aplicación o una automatización, cambiarla o corregir un error</p><span class="tag sonnet"><i></i>Sonnet</span></div>
+      <div class="row" role="listitem"><p>Un cambio pequeño en una aplicación, si Sonnet confirma que lo es (ver abajo)</p><span class="tag haiku"><i></i>Haiku</span></div>
+      <div class="row" role="listitem"><p>Buscar un dato en tus documentos, corregir erratas, dar formato o traducir un texto corto</p><span class="tag haiku"><i></i>Haiku</span></div>
+    </div>
+
+    <div class="small">
+      <h3>¿Es un cambio pequeño? No lo decides tú: pregúntaselo a Sonnet</h3>
+      <p>Un cambio es pequeño si cumple todo esto: solo cambia un texto, un color o un estilo; en un solo sitio; no toca datos, contraseñas, conexiones con otros programas ni cómo se calcula nada; y se deshace fácilmente. Copia esta frase antes de pedir el cambio:</p>
+      <div class="box">
+        <q id="frase">«Antes de hacer este cambio, dime si es pequeño: que solo cambie un texto, un color o un estilo, en un solo sitio, sin tocar datos, contraseñas, conexiones ni cálculos, y que se deshaga fácilmente. Si lo es, hazlo con Haiku; si no, hazlo tú y explícame por qué no es pequeño.»</q>
+        <button type="button" id="copiar">Copiar la frase</button>
+      </div>
+      <p>En Claude Code puede encargárselo él mismo a un ayudante con Haiku; en claude.ai o en Cowork, cambia tú el modelo a Haiku. Sonnet también puede equivocarse: prueba siempre la aplicación después del cambio.</p>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s4">
+    <h2 id="s4">Cuatro reglas (mandan sobre la tabla)</h2>
+    <ol class="rules">
+      <li><p><b>Si dudas, Sonnet.</b> Sirve para casi todo; Opus tarda más y gasta antes el cupo de uso.</p></li>
+      <li><p><b>Si es importante</b> (un contrato, dinero, una hoja con fórmulas que calcula dinero, una decisión, algo que sale fuera): Opus, y léelo tú antes de enviarlo. Lo que envías es tuyo, lo haya escrito quien lo haya escrito.</p></li>
+      <li><p>Antes de usar de verdad lo que construyas (con datos reales, para otras personas o publicado con un enlace), <b>que lo revise Opus</b> y pruébalo tú con datos inventados.</p></li>
+      <li><p><b>Cuidado con lo que pegas.</b> Nada de contraseñas. Datos de otras personas, solo los imprescindibles; datos de salud, no. No publiques el enlace de una conversación. Para probar, datos inventados.</p></li>
+    </ol>
+  </section>
+
+  <footer class="foot">
+    <span>Qué modelo de Claude usar · Javier Rivas · 28/10/2026</span>
+    <a href="que-modelo-de-claude-usar.pdf">Descargar en PDF</a>
+  </footer>
+</main>
+<script>
+(function(){
+  var b=document.getElementById('copiar'),f=document.getElementById('frase');
+  if(!b||!f)return;
+  b.addEventListener('click',function(){
+    var t=f.textContent.trim();
+    function ok(){b.textContent='Copiada';setTimeout(function(){b.textContent='Copiar la frase';},2000);}
+    function sel(){var r=document.createRange();r.selectNodeContents(f);var s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Seleccionada: cópiala con Ctrl+C';}
+    try{navigator.clipboard.writeText(t).then(ok,sel);}catch(e){sel();}
+  });
+})();
+</script>
+</body>
+</html>
